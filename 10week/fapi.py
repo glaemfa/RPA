@@ -28,6 +28,19 @@ async def creat_upload_file(file: UploadFile = File(...)):
         
     return {"filename": file.filename, "location": str(save_path)}
 
+from fastapi import File,UploadFile
+import shutil
+from pathlib import Path
+from fastapi.responses import FileResponse
+
+@app.get("/files/{filename}")
+async def get_file(filename: str):
+    file_path = Path("static/uploads") / filename
+    if file_path.is_file():
+        return FileResponse(path=file_path, filename=filename)
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
+    
 from fastapi.staticfiles import StaticFiles
 app.mount("/",StaticFiles(directory="static",html=True),name="static")
 
